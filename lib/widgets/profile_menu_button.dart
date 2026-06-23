@@ -75,6 +75,11 @@ class _ProfileSheet extends StatelessWidget {
   final AppRole role;
   final ({String name, String email}) user;
 
+  void _goTo(BuildContext context, String path) {
+    Navigator.of(context).pop();
+    context.push(path);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = context.sketch;
@@ -116,9 +121,21 @@ class _ProfileSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
-            _Item(icon: Icons.person_outline, label: 'Edit profile'),
-            _Item(icon: Icons.settings_outlined, label: 'Settings'),
-            _Item(icon: Icons.help_outline, label: 'Help & support'),
+            _Item(
+              icon: Icons.person_outline,
+              label: 'Edit profile',
+              onTap: () => _goTo(context, '/edit-profile'),
+            ),
+            _Item(
+              icon: Icons.settings_outlined,
+              label: 'Settings',
+              onTap: () => _goTo(context, '/settings'),
+            ),
+            _Item(
+              icon: Icons.help_outline,
+              label: 'Help & support',
+              onTap: () => _goTo(context, '/help'),
+            ),
             const Divider(height: AppSpacing.lg),
             _Item(
               icon: Icons.logout,

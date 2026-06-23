@@ -11,6 +11,7 @@ import 'package:evora/features/attendee/event_list_screen.dart';
 import 'package:evora/features/attendee/my_tickets_screen.dart';
 import 'package:evora/features/attendee/notifications_screen.dart';
 import 'package:evora/features/attendee/payment_screen.dart';
+import 'package:evora/features/attendee/profile_pages.dart';
 import 'package:evora/features/attendee/profile_screen.dart';
 import 'package:evora/features/attendee/seat_map_screen.dart';
 import 'package:evora/features/attendee/ticket_detail_screen.dart';
@@ -73,6 +74,10 @@ final appRouter = GoRouter(
     GoRoute(path: '/signup', builder: (_, _) => const SignUpScreen()),
     GoRoute(path: '/forgot', builder: (_, _) => const ForgotPasswordScreen()),
     _route('/notifications', (_) => const NotificationsScreen()),
+    _route('/edit-profile', (_) => const EditProfileScreen()),
+    _route('/settings', (_) => const SettingsScreen()),
+    _route('/help', (_) => const HelpSupportScreen()),
+    _route('/about', (_) => const AboutEvoraScreen()),
     _route('/event/:id', (s) => EventDetailScreen(eventId: s.pathParameters['id']!)),
     _route('/event/:id/tickets',
         (s) => TicketSelectScreen(eventId: s.pathParameters['id']!)),

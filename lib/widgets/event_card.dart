@@ -29,7 +29,12 @@ class EventCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(event.title, style: theme.textTheme.titleLarge),
+                  Text(
+                    event.title,
+                    style: theme.textTheme.titleLarge,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 8),
                   _MetaRow(icon: Icons.calendar_today_outlined, text: '${formatDay(event.date)}  ·  ${formatTime(event.date)}'),
                   const SizedBox(height: 4),

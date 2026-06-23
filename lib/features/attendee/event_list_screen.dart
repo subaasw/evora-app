@@ -62,7 +62,7 @@ class _EventListScreenState extends State<EventListScreen> {
               _SectionTitle(title: 'Featured', trailing: '${featured.length}'),
               const SizedBox(height: AppSpacing.md),
               SizedBox(
-                height: 300,
+                height: 330,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: featured.length,

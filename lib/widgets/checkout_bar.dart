@@ -36,17 +36,24 @@ class CheckoutBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(subtitle, style: theme.textTheme.bodySmall),
-              Text(
-                '\$${amount.toStringAsFixed(0)}',
-                style: theme.textTheme.titleLarge?.copyWith(
-                    color: s.brandStrong, fontWeight: FontWeight.w700),
-              ),
-            ],
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  '\$${amount.toStringAsFixed(0)}',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                      color: s.brandStrong, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(

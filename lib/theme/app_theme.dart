@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:evora/theme/sketch_colors.dart';
 
+/// App-wide theme mode. Settings writes it; [MaterialApp] listens to it.
+final themeModeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
+
 TextTheme _textTheme(TextTheme base, SketchColors c) {
   final body = GoogleFonts.nunitoTextTheme(base);
   TextStyle hand(TextStyle? s) => GoogleFonts.patrickHand(textStyle: s);

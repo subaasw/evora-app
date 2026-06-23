@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:evora/theme/app_theme.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/evora_logo.dart';
@@ -133,6 +134,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.fromLTRB(
             AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xl),
         children: [
+          Text('Appearance', style: theme.textTheme.titleLarge),
+          const SizedBox(height: AppSpacing.sm),
+          const _ThemeModePicker(),
+          const SizedBox(height: AppSpacing.lg),
           Text('Notifications', style: theme.textTheme.titleLarge),
           const SizedBox(height: AppSpacing.sm),
           _Toggle(
@@ -151,6 +156,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (v) => setState(() => _reminders = v),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThemeModePicker extends StatelessWidget {
+  const _ThemeModePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeModeNotifier,
+      builder: (_, mode, _) => SizedBox(
+        width: double.infinity,
+        child: SegmentedButton<ThemeMode>(
+          segments: const [
+            ButtonSegment(value: ThemeMode.system, label: Text('System')),
+            ButtonSegment(value: ThemeMode.light, label: Text('Light')),
+            ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+          ],
+          selected: {mode},
+          showSelectedIcon: false,
+          onSelectionChanged: (s) => themeModeNotifier.value = s.first,
+        ),
       ),
     );
   }

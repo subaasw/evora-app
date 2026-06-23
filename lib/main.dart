@@ -22,13 +22,16 @@ class EvoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookingStore()),
         ChangeNotifierProvider(create: (_) => WaitlistStore()),
       ],
-      child: MaterialApp.router(
-        title: 'Evora',
-        debugShowCheckedModeBanner: false,
-        theme: lightTheme(),
-        darkTheme: darkTheme(),
-        themeMode: ThemeMode.system,
-        routerConfig: appRouter,
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: themeModeNotifier,
+        builder: (_, mode, _) => MaterialApp.router(
+          title: 'Evora',
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme(),
+          darkTheme: darkTheme(),
+          themeMode: mode,
+          routerConfig: appRouter,
+        ),
       ),
     );
   }

@@ -37,6 +37,13 @@ class _SketchButtonState extends State<SketchButton> {
     final ring = widget.secondary ? s.brandSoft : s.brand;
     final fg = widget.secondary ? s.heading : Colors.white;
 
+    final label = Text(
+      widget.label,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 16),
+    );
     final content = Row(
       mainAxisSize: widget.fullWidth ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -45,10 +52,8 @@ class _SketchButtonState extends State<SketchButton> {
           Icon(widget.icon, size: 18, color: fg),
           const SizedBox(width: 8),
         ],
-        Text(
-          widget.label,
-          style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 16),
-        ),
+        // Flexible only inside a max-width row; a min-width row can't flex.
+        widget.fullWidth ? Flexible(child: label) : label,
       ],
     );
 
@@ -65,7 +70,7 @@ class _SketchButtonState extends State<SketchButton> {
           child: CustomPaint(
             foregroundPainter: DashedBorderPainter(color: s.ink, radius: 999),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
               decoration: BoxDecoration(
                 color: fill,
                 borderRadius: BorderRadius.circular(999),

@@ -79,6 +79,25 @@ ThemeData _build(SketchColors c, Brightness brightness) {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(foregroundColor: c.brandStrong),
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: c.paper,
+      indicatorColor: c.brandSofter,
+      elevation: 0,
+      height: 68,
+      labelTextStyle: WidgetStatePropertyAll(
+        TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.body),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected) ? c.brandStrong : c.bodySubtle,
+        ),
+      ),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      backgroundColor: c.paperSoft,
+      shape: const StadiumBorder(),
+      side: BorderSide(color: c.borderDefault, width: 2),
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: c.ink,
       contentTextStyle: const TextStyle(color: Colors.white),

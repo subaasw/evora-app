@@ -37,25 +37,25 @@ class _SketchButtonState extends State<SketchButton> {
     final ring = widget.secondary ? s.brandSoft : s.brand;
     final fg = widget.secondary ? s.heading : Colors.white;
 
-    final label = Text(
-      widget.label,
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 16),
-    );
-    final content = Row(
-      mainAxisSize: widget.fullWidth ? MainAxisSize.max : MainAxisSize.min,
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.icon != null) ...[
           Icon(widget.icon, size: 18, color: fg),
           const SizedBox(width: 8),
         ],
-        // Flexible only inside a max-width row; a min-width row can't flex.
-        widget.fullWidth ? Flexible(child: label) : label,
+        Text(
+          widget.label,
+          maxLines: 1,
+          style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 16),
+        ),
       ],
     );
+    // Scales content down to fit tight space — never overflows, never truncates.
+    final scaled = FittedBox(fit: BoxFit.scaleDown, child: row);
+    final content =
+        widget.fullWidth ? SizedBox(width: double.infinity, child: scaled) : scaled;
 
     return Opacity(
       opacity: enabled ? 1 : 0.5,

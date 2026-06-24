@@ -34,36 +34,44 @@ class CheckoutBar extends StatelessWidget {
         color: s.canvas,
         border: Border(top: BorderSide(color: s.ink, width: 2)),
       ),
-      child: Row(
-        children: [
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  '\$${amount.toStringAsFixed(0)}',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                      color: s.brandStrong, fontWeight: FontWeight.w700),
-                ),
-              ],
+      // Price info takes the leftover space and truncates; the CTA keeps its
+      // natural size pinned right, capped so it can never overflow the screen.
+      child: LayoutBuilder(
+        builder: (context, constraints) => Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '\$${amount.toStringAsFixed(0)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                        color: s.brandStrong, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: SketchButton(
-              label: label,
-              icon: icon,
-              onPressed: enabled ? onPressed : null,
+            const SizedBox(width: AppSpacing.md),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
+              child: SketchButton(
+                label: label,
+                icon: icon,
+                fullWidth: false,
+                onPressed: enabled ? onPressed : null,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

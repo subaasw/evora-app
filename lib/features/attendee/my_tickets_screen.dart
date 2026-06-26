@@ -7,6 +7,7 @@ import 'package:evora/data/mock/models.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_box.dart';
+import 'package:evora/widgets/ticket_perforation.dart';
 import 'package:evora/widgets/ticket_qr.dart';
 
 class MyTicketsScreen extends StatelessWidget {
@@ -88,7 +89,7 @@ class _TicketCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const _Perforation(),
+                const TicketPerforation(),
                 // Stub
                 Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -145,74 +146,6 @@ class _StubLine extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Ticket tear line: side notches cut into the canvas + a dashed divider.
-class _Perforation extends StatelessWidget {
-  const _Perforation();
-
-  @override
-  Widget build(BuildContext context) {
-    final s = context.sketch;
-    return SizedBox(
-      height: 20,
-      child: Row(
-        children: [
-          _Notch(color: s.canvas, border: s.ink),
-          Expanded(
-            child: CustomPaint(
-              painter: _DashedLinePainter(s.borderDefault),
-              size: const Size.fromHeight(2),
-            ),
-          ),
-          _Notch(color: s.canvas, border: s.ink),
-        ],
-      ),
-    );
-  }
-}
-
-class _Notch extends StatelessWidget {
-  const _Notch({required this.color, required this.border});
-
-  final Color color;
-  final Color border;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 18,
-      height: 18,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: border, width: 2),
-      ),
-    );
-  }
-}
-
-class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter(this.color);
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2;
-    const dash = 6.0;
-    const gap = 5.0;
-    var x = 0.0;
-    final y = size.height / 2;
-    while (x < size.width) {
-      canvas.drawLine(Offset(x, y), Offset(x + dash, y), paint);
-      x += dash + gap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedLinePainter old) => old.color != color;
 }
 
 class _Empty extends StatelessWidget {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// The three actor types from the EMS case study.
 enum AppRole { attendee, organizer, admin }
 
 extension AppRoleX on AppRole {

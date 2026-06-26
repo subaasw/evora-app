@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:evora/theme/pencil_shadow.dart';
 import 'package:evora/theme/sketch_colors.dart';
 
-/// Strokes a dashed rounded-rect outline along the edge of its bounds.
 class DashedBorderPainter extends CustomPainter {
   const DashedBorderPainter({
     required this.color,
@@ -47,7 +46,6 @@ class DashedBorderPainter extends CustomPainter {
       old.color != color || old.radius != radius || old.width != width;
 }
 
-/// A "paper" surface: fill + dashed ink outline + dual-layer pencil shadow.
 class SketchBox extends StatelessWidget {
   const SketchBox({
     super.key,
@@ -63,7 +61,6 @@ class SketchBox extends StatelessWidget {
   final double radius;
   final EdgeInsetsGeometry padding;
 
-  /// Defaults to a pencil shadow whose ring matches [fill].
   final List<BoxShadow>? shadow;
 
   @override

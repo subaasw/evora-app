@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-/// Spacing scale on a 4pt grid.
 abstract final class AppSpacing {
   static const double xs = 4;
   static const double sm = 8;

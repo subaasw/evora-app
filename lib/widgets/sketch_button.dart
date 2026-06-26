@@ -4,8 +4,6 @@ import 'package:evora/theme/pencil_shadow.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_box.dart';
 
-/// Pill button with a dashed ink outline and the dual-layer pencil shadow.
-/// Presses translate down-right and collapse the drop shadow.
 class SketchButton extends StatefulWidget {
   const SketchButton({
     super.key,

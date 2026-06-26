@@ -3,8 +3,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:evora/theme/sketch_colors.dart';
 
-/// A real, scannable QR code for a ticket, on a light tile with a dashed ink
-/// frame to match the hand-drawn aesthetic.
 class TicketQr extends StatelessWidget {
   const TicketQr({super.key, required this.data, this.size = 200, this.framed = true});
 

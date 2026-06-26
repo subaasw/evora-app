@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Fades and slides its child up on first build, with an optional stagger
-/// [delay] for cascading list entrances.
 class FadeInUp extends StatefulWidget {
   const FadeInUp({super.key, required this.child, this.delay = Duration.zero});
 

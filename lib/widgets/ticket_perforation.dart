@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:evora/theme/sketch_colors.dart';
 
-/// Ticket tear line: side notches cut into the canvas + a dashed divider.
-/// Sits inside a [SketchBox]/ticket card to split header from stub.
 class TicketPerforation extends StatelessWidget {
   const TicketPerforation({super.key});
 

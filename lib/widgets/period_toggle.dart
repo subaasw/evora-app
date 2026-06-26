@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:evora/data/mock/analytics.dart';
 
-/// Daily / Weekly / Monthly selector for the analytics & reports screens.
 class PeriodToggle extends StatelessWidget {
   const PeriodToggle({super.key, required this.selected, required this.onChanged});
 

@@ -9,8 +9,6 @@ class RoleNavItem {
   final String label;
 }
 
-/// Bottom-nav scaffold shared by all three role shells. The hand-drawn top
-/// border separates the nav bar from the cream canvas.
 class RoleShell extends StatelessWidget {
   const RoleShell({super.key, required this.shell, required this.items});
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:evora/data/mock/analytics.dart';
 import 'package:evora/theme/sketch_colors.dart';
 
-/// Minimal bar chart over a [SeriesPoint] list, styled to the theme.
 class SimpleBarChart extends StatelessWidget {
   const SimpleBarChart({super.key, required this.points, this.height = 200});
 

@@ -4,7 +4,6 @@ import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_button.dart';
 
-/// Sticky bottom bar used across the booking flow: a price block + primary CTA.
 class CheckoutBar extends StatelessWidget {
   const CheckoutBar({
     super.key,
@@ -34,8 +33,6 @@ class CheckoutBar extends StatelessWidget {
         color: s.canvas,
         border: Border(top: BorderSide(color: s.ink, width: 2)),
       ),
-      // Price info takes the leftover space and truncates; the CTA keeps its
-      // natural size pinned right, capped so it can never overflow the screen.
       child: LayoutBuilder(
         builder: (context, constraints) => Row(
           children: [

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:evora/theme/sketch_colors.dart';
 
-/// Pill badge: 2px solid border, optional leading icon. Colors default to the
-/// neutral "alternative" variant when not supplied.
 class SketchBadge extends StatelessWidget {
   const SketchBadge({
     super.key,

@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_box.dart';
 
-/// Evora's brand mark: a teal paper tile with a dashed ink outline holding a
-/// perforated event ticket glyph with a spark — ties back to the app's own
-/// ticket-stub motif and reads instantly as "events".
 class EvoraLogo extends StatelessWidget {
   const EvoraLogo({super.key, this.size = 72, this.withWordmark = false});
 

@@ -5,7 +5,6 @@ import 'package:evora/data/app_role.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 
-/// Mock signed-in user per role.
 ({String name, String email}) _userFor(AppRole role) => switch (role) {
       AppRole.attendee => (name: 'Alex Tan', email: 'alex.tan@email.com'),
       AppRole.organizer => (name: 'Aisha Rahman', email: 'aisha@soundwave.com'),
@@ -18,7 +17,6 @@ String _initials(String name) {
   return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
 }
 
-/// Convenience for AppBar `actions:` — the profile avatar with trailing padding.
 List<Widget> profileActions(AppRole role) => [
       Padding(
         padding: const EdgeInsets.only(right: AppSpacing.md),

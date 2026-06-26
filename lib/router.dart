@@ -8,6 +8,7 @@ import 'package:evora/features/attendee/cart_screen.dart';
 import 'package:evora/features/attendee/confirmation_screen.dart';
 import 'package:evora/features/attendee/event_detail_screen.dart';
 import 'package:evora/features/attendee/event_list_screen.dart';
+import 'package:evora/features/attendee/invoice_screen.dart';
 import 'package:evora/features/attendee/my_tickets_screen.dart';
 import 'package:evora/features/attendee/notifications_screen.dart';
 import 'package:evora/features/attendee/payment_screen.dart';
@@ -84,6 +85,8 @@ final appRouter = GoRouter(
     _route('/event/:id/confirm',
         (s) => ConfirmationScreen(bookingId: s.uri.queryParameters['b'] ?? '')),
     _route('/ticket/:id', (s) => TicketDetailScreen(bookingId: s.pathParameters['id']!)),
+    _route('/ticket/:id/invoice',
+        (s) => InvoiceScreen(bookingId: s.pathParameters['id']!)),
     _route('/event/:id/waitlist',
         (s) => WaitlistScreen(eventId: s.pathParameters['id']!)),
     StatefulShellRoute.indexedStack(

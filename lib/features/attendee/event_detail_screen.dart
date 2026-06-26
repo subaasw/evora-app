@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'package:evora/data/mock/booking_store.dart';
 import 'package:evora/data/mock/event_store.dart';
 import 'package:evora/data/mock/models.dart';
 import 'package:evora/theme/app_tokens.dart';
@@ -163,11 +164,16 @@ class _BookingBar extends StatelessWidget {
               label: event.soldOut ? 'Join waitlist' : 'Book tickets',
               icon: event.soldOut ? Icons.notifications_active_outlined : Icons.confirmation_number_outlined,
               secondary: event.soldOut,
-              onPressed: () => context.push(
-                event.soldOut
-                    ? '/event/${event.id}/waitlist'
-                    : '/event/${event.id}/seats',
-              ),
+              onPressed: () {
+                if (event.soldOut) {
+                  context.push('/event/${event.id}/waitlist');
+                  return;
+                }
+                // Initialise the booking session (prices + clean seats) before
+                // the seat map opens, so subtotal/total and Review order work.
+                context.read<BookingStore>().start(event);
+                context.push('/event/${event.id}/seats');
+              },
             ),
           ),
         ],

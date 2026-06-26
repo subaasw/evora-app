@@ -7,8 +7,9 @@ class SessionStore extends ChangeNotifier {
   String _email = '';
   String _phone = '';
 
-  String get name => _name.isEmpty ? 'Guest' : _name;
-  String get email => _email.isEmpty ? 'guest@evora.app' : _email;
+  // Default demo attendee until someone signs in with their own email.
+  String get name => _name.isEmpty ? 'Subash Giri' : _name;
+  String get email => _email.isEmpty ? 'subash.giri@gmail.com' : _email;
   String get phone => _phone;
 
   /// First letters of up to two name words, e.g. "Alex Tan" -> "AT".
@@ -43,11 +44,11 @@ class SessionStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  // "alex.tan@x.com" -> "Alex Tan"
+  // "subash.giri@x.com" -> "Subash Giri"
   static String _nameFromEmail(String email) {
     final local = email.split('@').first;
     final words = local.split(RegExp(r'[._\-]+')).where((w) => w.isNotEmpty);
-    if (words.isEmpty) return 'Guest';
+    if (words.isEmpty) return 'Subash Giri';
     return words.map((w) => w[0].toUpperCase() + w.substring(1)).join(' ');
   }
 }

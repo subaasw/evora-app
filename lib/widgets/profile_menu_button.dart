@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'package:evora/data/app_role.dart';
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 
-({String name, String email}) _userFor(AppRole role) => switch (role) {
-      AppRole.attendee => (name: 'Alex Tan', email: 'alex.tan@email.com'),
-      AppRole.organizer => (name: 'Aisha Rahman', email: 'aisha@soundwave.com'),
-      AppRole.admin => (name: 'Auditorium Admin', email: 'admin@helpevents.com'),
-    };
+({String name, String email}) _userFor(BuildContext context, AppRole role) {
+  switch (role) {
+    case AppRole.attendee:
+      final s = context.watch<SessionStore>();
+      return (name: s.name, email: s.email);
+    case AppRole.organizer:
+      return (name: 'Subash Giri', email: 'subash.org@gmail.com');
+    case AppRole.admin:
+      return (name: 'Subash Admin', email: 'subash.admin@gmail.com');
+  }
+}
 
 String _initials(String name) {
   final parts = name.trim().split(' ');
@@ -34,7 +42,7 @@ class ProfileMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = context.sketch;
-    final user = _userFor(role);
+    final user = _userFor(context, role);
     return GestureDetector(
       onTap: () => _openSheet(context, user),
       child: Container(
@@ -141,6 +149,7 @@ class _ProfileSheet extends StatelessWidget {
               danger: true,
               onTap: () {
                 Navigator.of(context).pop();
+                context.read<SessionStore>().signOut();
                 context.go('/login');
               },
             ),

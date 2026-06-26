@@ -21,13 +21,13 @@ void main() {
     expect(s.phone, '123');
   });
 
-  test('empty session reads as a guest, signOut clears', () {
+  test('empty session reads as the default attendee, signOut resets it', () {
     final s = SessionStore();
-    expect(s.name, 'Guest');
-    expect(s.email, 'guest@evora.app');
+    expect(s.name, 'Subash Giri');
+    expect(s.email, 'subash.giri@gmail.com');
 
     s.signIn(email: 'a@b.com');
     s.signOut();
-    expect(s.name, 'Guest');
+    expect(s.name, 'Subash Giri');
   });
 }

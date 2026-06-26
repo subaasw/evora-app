@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'package:evora/data/app_role.dart';
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_box.dart';
@@ -17,10 +19,32 @@ class StaffLoginScreen extends StatefulWidget {
 
 class _StaffLoginScreenState extends State<StaffLoginScreen> {
   AppRole _role = AppRole.organizer;
+  late final _email = TextEditingController(text: _defaultEmail(_role));
 
   static const _staffRoles = [AppRole.organizer, AppRole.admin];
 
+  // Demo staff accounts, prefilled per role.
+  static String _defaultEmail(AppRole role) => switch (role) {
+        AppRole.organizer => 'subash.org@gmail.com',
+        AppRole.admin => 'subash.admin@gmail.com',
+        AppRole.attendee => 'subash.giri@gmail.com',
+      };
+
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  void _selectRole(AppRole role) {
+    setState(() {
+      _role = role;
+      _email.text = _defaultEmail(role);
+    });
+  }
+
   void _signIn() {
+    context.read<SessionStore>().signIn(email: _email.text);
     context.go(switch (_role) {
       AppRole.organizer => '/organizer/events',
       AppRole.admin => '/admin/organizers',
@@ -54,7 +78,7 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
                       child: _RoleCard(
                         role: role,
                         selected: _role == role,
-                        onTap: () => setState(() => _role = role),
+                        onTap: () => _selectRole(role),
                       ),
                     ),
                     if (role != _staffRoles.last) const SizedBox(width: AppSpacing.md),
@@ -62,9 +86,10 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
-              const TextField(
+              TextField(
+                controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Work email',
                   prefixIcon: Icon(Icons.mail_outline),
                 ),

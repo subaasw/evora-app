@@ -22,31 +22,31 @@ class Organizer {
 
 final List<Organizer> seedOrganizers = [
   const Organizer(
-    name: 'Aisha Rahman',
+    name: 'Aarav Sharma',
     org: 'Soundwave Productions',
-    email: 'aisha@soundwave.com',
-    phone: '+60 12-345 6789',
+    email: 'aarav@soundwave.com',
+    phone: '+977 98-1234 5678',
     events: 8,
   ),
   const Organizer(
-    name: 'Daniel Lee',
+    name: 'Bishal Thapa',
     org: 'TechMeet Asia',
-    email: 'daniel@techmeet.asia',
-    phone: '+60 13-222 4455',
+    email: 'bishal@techmeet.asia',
+    phone: '+977 98-2222 4455',
     events: 5,
   ),
   const Organizer(
-    name: 'Priya Nair',
+    name: 'Anjali Gurung',
     org: 'Craft Collective',
-    email: 'priya@craftcollective.io',
-    phone: '+60 11-987 6543',
+    email: 'anjali@craftcollective.io',
+    phone: '+977 98-7654 3210',
     events: 3,
   ),
   const Organizer(
-    name: 'Marcus Tan',
+    name: 'Nirajan Shrestha',
     org: 'Stage One Events',
-    email: 'marcus@stageone.my',
-    phone: '+60 16-555 1212',
+    email: 'nirajan@stageone.my',
+    phone: '+977 98-5551 2120',
     events: 11,
   ),
 ];

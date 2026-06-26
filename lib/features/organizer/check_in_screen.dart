@@ -20,9 +20,10 @@ class CheckInScreen extends StatefulWidget {
 }
 
 class _CheckInScreenState extends State<CheckInScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final MobileScannerController _scanner = MobileScannerController(
     detectionSpeed: DetectionSpeed.normal,
+    autoStart: false,
   );
   late final AnimationController _line = AnimationController(
     vsync: this,
@@ -37,7 +38,43 @@ class _CheckInScreenState extends State<CheckInScreen>
   DateTime _lastAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _safeStart();
+  }
+
+  // ponytail: silently swallow camera errors — errorBuilder already shows the
+  // fallback UI; without these guards an unready/torchless camera crashes the app.
+  Future<void> _safeStart() async {
+    try {
+      await _scanner.start();
+    } catch (_) {/* errorBuilder handles display */}
+  }
+
+  Future<void> _guard(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {/* device lacks torch / camera not ready */}
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!_scanner.value.hasCameraPermission) return;
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _safeStart();
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        _guard(_scanner.stop);
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _line.dispose();
     _scanner.dispose();
     super.dispose();
@@ -99,11 +136,11 @@ class _CheckInScreenState extends State<CheckInScreen>
         title: const Text('Check-in'),
         actions: [
           IconButton(
-            onPressed: () => _scanner.toggleTorch(),
+            onPressed: () => _guard(_scanner.toggleTorch),
             icon: const Icon(Icons.flash_on_outlined),
           ),
           IconButton(
-            onPressed: () => _scanner.switchCamera(),
+            onPressed: () => _guard(_scanner.switchCamera),
             icon: const Icon(Icons.cameraswitch_outlined),
           ),
           ...profileActions(AppRole.organizer),

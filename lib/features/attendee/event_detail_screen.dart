@@ -166,7 +166,7 @@ class _BookingBar extends StatelessWidget {
               onPressed: () => context.push(
                 event.soldOut
                     ? '/event/${event.id}/waitlist'
-                    : '/event/${event.id}/tickets',
+                    : '/event/${event.id}/seats',
               ),
             ),
           ),

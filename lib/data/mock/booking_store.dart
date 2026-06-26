@@ -35,8 +35,9 @@ class Booking {
 /// nothing is persisted or sent anywhere.
 class BookingStore extends ChangeNotifier {
   EventModel? _event;
-  final Map<String, int> _qty = {};
-  final Set<String> _seats = {};
+  // Selected seats drive the whole order: seat id -> ticket category name.
+  final Map<String, String> _seatCat = {};
+  final Map<String, double> _price = {}; // category name -> price
   String? _promo;
   double _rate = 0;
 
@@ -51,48 +52,48 @@ class BookingStore extends ChangeNotifier {
   void start(EventModel event) {
     if (_event?.id != event.id) {
       _event = event;
-      _qty.clear();
-      _seats.clear();
+      _seatCat.clear();
       _promo = null;
       _rate = 0;
     }
+    _price
+      ..clear()
+      ..addEntries(event.ticketTypes.map((t) => MapEntry(t.name, t.price)));
     notifyListeners();
   }
 
-  int qtyOf(String ticketName) => _qty[ticketName] ?? 0;
+  /// Seats selected, sorted for a stable display order.
+  List<String> get seats => _seatCat.keys.toList()..sort();
+  int get seatCount => _seatCat.length;
+  bool isSelected(String id) => _seatCat.containsKey(id);
 
-  void setQty(String ticketName, int value) {
-    if (value <= 0) {
-      _qty.remove(ticketName);
+  /// Toggle a seat in [category]. No upfront cap — the seats you tap are the
+  /// tickets you buy.
+  void toggleSeat(String id, String category) {
+    if (_seatCat.containsKey(id)) {
+      _seatCat.remove(id);
     } else {
-      _qty[ticketName] = value;
-    }
-    // Drop seats that no longer fit the (possibly lower) quantity.
-    while (_seats.length > seatTarget) {
-      _seats.remove(_seats.last);
+      _seatCat[id] = category;
     }
     notifyListeners();
   }
 
-  int get seatTarget => _qty.values.fold(0, (a, b) => a + b);
+  int qtyOf(String ticketName) =>
+      _seatCat.values.where((c) => c == ticketName).length;
 
-  Set<String> get seats => _seats;
-
-  void toggleSeat(String id) {
-    if (_seats.contains(id)) {
-      _seats.remove(id);
-    } else if (_seats.length < seatTarget) {
-      _seats.add(id);
+  /// Per-category counts, derived from the selected seats.
+  Map<String, int> get quantities {
+    final m = <String, int>{};
+    for (final c in _seatCat.values) {
+      m[c] = (m[c] ?? 0) + 1;
     }
-    notifyListeners();
+    return m;
   }
 
   double get subtotal {
-    final event = _event;
-    if (event == null) return 0;
     var sum = 0.0;
-    for (final t in event.ticketTypes) {
-      sum += t.price * qtyOf(t.name);
+    for (final c in _seatCat.values) {
+      sum += _price[c] ?? 0;
     }
     return sum;
   }
@@ -120,8 +121,8 @@ class BookingStore extends ChangeNotifier {
     final booking = Booking(
       id: 'EVO-${DateTime.now().millisecondsSinceEpoch % 100000}',
       event: _event!,
-      quantities: Map.of(_qty),
-      seats: _seats.toList()..sort(),
+      quantities: quantities,
+      seats: seats,
       total: total,
       bookedAt: DateTime.now(),
     );

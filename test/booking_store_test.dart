@@ -18,39 +18,32 @@ EventModel _event() => EventModel(
     );
 
 void main() {
-  test('subtotal sums quantity × price', () {
+  test('selected seats drive subtotal and per-category quantities', () {
     final store = BookingStore()..start(_event());
-    store.setQty('General', 2); // 40
-    store.setQty('VIP', 1); // 50
+    store.toggleSeat('A1', 'VIP'); // 50
+    store.toggleSeat('B1', 'General'); // 20
+    store.toggleSeat('B2', 'General'); // 20
     expect(store.subtotal, 90);
-    expect(store.seatTarget, 3);
+    expect(store.seatCount, 3);
+    expect(store.qtyOf('General'), 2);
+    expect(store.qtyOf('VIP'), 1);
+    expect(store.quantities, {'VIP': 1, 'General': 2});
   });
 
-  test('seat selection is capped at the ticket count', () {
+  test('tapping a selected seat deselects it', () {
     final store = BookingStore()..start(_event());
-    store.setQty('General', 2);
-    store.toggleSeat('A1');
-    store.toggleSeat('A2');
-    store.toggleSeat('A3'); // rejected — over cap
-    expect(store.seats, {'A1', 'A2'});
-
-    store.toggleSeat('A1'); // deselect
-    expect(store.seats, {'A2'});
-  });
-
-  test('lowering quantity drops overflowing seats', () {
-    final store = BookingStore()..start(_event());
-    store.setQty('General', 3);
-    store.toggleSeat('A1');
-    store.toggleSeat('A2');
-    store.toggleSeat('A3');
-    store.setQty('General', 1);
-    expect(store.seats.length, 1);
+    store.toggleSeat('A1', 'General');
+    store.toggleSeat('A2', 'General');
+    store.toggleSeat('A1', 'General'); // deselect
+    expect(store.seats, ['A2']);
+    expect(store.subtotal, 20);
   });
 
   test('valid promo discounts the total, invalid does not', () {
     final store = BookingStore()..start(_event());
-    store.setQty('General', 5); // 100
+    for (var i = 1; i <= 5; i++) {
+      store.toggleSeat('A$i', 'General'); // 5 × 20 = 100
+    }
 
     expect(store.applyPromo('nope'), isFalse);
     expect(store.total, 100);

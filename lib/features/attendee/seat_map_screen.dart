@@ -22,27 +22,26 @@ class SeatMapScreen extends StatelessWidget {
     final store = context.watch<BookingStore>();
     final event = context.read<EventStore>().byId(eventId);
     final layout = seatLayoutFor(event);
-    final remaining = store.seatTarget - store.seats.length;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pick seats')),
+      appBar: AppBar(title: const Text('Choose seats')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
             AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xl),
         children: [
-          const _Stage(),
+          const _Screen(),
           const SizedBox(height: AppSpacing.lg),
           _SeatGrid(layout: layout, store: store),
           const SizedBox(height: AppSpacing.lg),
-          const _Legend(),
+          _CategoryLegend(categories: layout.categories),
         ],
       ),
       bottomNavigationBar: CheckoutBar(
-        subtitle: remaining > 0
-            ? 'Select $remaining more seat(s)'
-            : '${store.seats.length} selected · ${store.seats.join(', ')}',
+        subtitle: store.seatCount == 0
+            ? 'Tap seats to select'
+            : '${store.seatCount} seat(s) · ${store.seats.join(', ')}',
         amount: store.subtotal,
-        enabled: remaining == 0 && store.seatTarget > 0,
+        enabled: store.seatCount > 0,
         label: 'Review order',
         onPressed: () => context.push('/event/$eventId/cart'),
       ),
@@ -50,40 +49,69 @@ class SeatMapScreen extends StatelessWidget {
   }
 }
 
-class _Stage extends StatelessWidget {
-  const _Stage();
+/// Curved cinema-style screen arc at the top of the map.
+class _Screen extends StatelessWidget {
+  const _Screen();
 
   @override
   Widget build(BuildContext context) {
     final s = context.sketch;
     return Column(
       children: [
-        Container(
-          height: 38,
+        SizedBox(
+          height: 44,
           width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [s.brand, s.brandStrong]),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(40),
-              bottom: Radius.circular(8),
-            ),
-            border: Border.all(color: s.ink, width: 2),
-          ),
-          child: Text(
-            'S T A G E',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2,
-              fontSize: 13,
-            ),
+          child: CustomPaint(painter: _ScreenPainter(s.brand, s.brandStrong, s.ink)),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'S C R E E N',
+          style: TextStyle(
+            color: s.bodySubtle,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 4,
+            fontSize: 11,
           ),
         ),
       ],
     );
   }
+}
+
+class _ScreenPainter extends CustomPainter {
+  _ScreenPainter(this.brand, this.brandStrong, this.ink);
+
+  final Color brand;
+  final Color brandStrong;
+  final Color ink;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const inset = 32.0;
+    final path = Path()
+      ..moveTo(inset, size.height)
+      ..quadraticBezierTo(size.width / 2, -size.height * 0.5,
+          size.width - inset, size.height)
+      ..lineTo(size.width - inset + 10, size.height)
+      ..quadraticBezierTo(size.width / 2, -size.height * 0.5 + 14,
+          inset - 10, size.height)
+      ..close();
+    canvas.drawPath(
+      path,
+      Paint()..shader = LinearGradient(colors: [brand, brandStrong]).createShader(
+          Offset.zero & size),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = ink
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScreenPainter old) => false;
 }
 
 class _SeatGrid extends StatelessWidget {
@@ -94,16 +122,21 @@ class _SeatGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? lastSection;
+    SeatCategory? lastCat;
     final children = <Widget>[];
 
     for (var r = 0; r < layout.rows.length; r++) {
-      final section = layout.sectionForRow(r);
-      if (section != lastSection) {
-        children.add(_SectionLabel(label: section));
-        lastSection = section;
+      final cat = layout.rowCategory[r];
+      if (cat != lastCat) {
+        children.add(_CategoryHeader(category: cat));
+        lastCat = cat;
       }
-      children.add(_SeatRow(letter: _rowLetters[r], seats: layout.rows[r], store: store));
+      children.add(_SeatRow(
+        letter: _rowLetters[r],
+        seats: layout.rows[r],
+        color: cat.color,
+        store: store,
+      ));
     }
 
     return FittedBox(
@@ -113,44 +146,68 @@ class _SeatGrid extends StatelessWidget {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
+/// Typed, coloured tier divider: category name + price on a soft pill.
+class _CategoryHeader extends StatelessWidget {
+  const _CategoryHeader({required this.category});
 
-  final String label;
+  final SeatCategory category;
 
   @override
   Widget build(BuildContext context) {
-    final s = context.sketch;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(width: 28, height: 2, color: s.borderDefault),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              label.toUpperCase(),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: category.color.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(color: category.color, width: 1.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(color: category.color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              category.name.toUpperCase(),
               style: TextStyle(
-                color: s.bodySubtle,
+                color: category.color,
                 fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
               ),
             ),
-          ),
-          Container(width: 28, height: 2, color: s.borderDefault),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              '\$${category.price.toStringAsFixed(0)}',
+              style: TextStyle(
+                color: category.color,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _SeatRow extends StatelessWidget {
-  const _SeatRow({required this.letter, required this.seats, required this.store});
+  const _SeatRow({
+    required this.letter,
+    required this.seats,
+    required this.color,
+    required this.store,
+  });
 
   final String letter;
   final List<Seat> seats;
+  final Color color;
   final BookingStore store;
 
   @override
@@ -176,8 +233,9 @@ class _SeatRow extends StatelessWidget {
             if (i == mid) const SizedBox(width: 18), // aisle
             _SeatBox(
               seat: seats[i],
-              selected: store.seats.contains(seats[i].id),
-              onTap: () => store.toggleSeat(seats[i].id),
+              color: color,
+              selected: store.isSelected(seats[i].id),
+              onTap: () => store.toggleSeat(seats[i].id, seats[i].category),
             ),
           ],
           label(),
@@ -188,9 +246,15 @@ class _SeatRow extends StatelessWidget {
 }
 
 class _SeatBox extends StatelessWidget {
-  const _SeatBox({required this.seat, required this.selected, required this.onTap});
+  const _SeatBox({
+    required this.seat,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
 
   final Seat seat;
+  final Color color;
   final bool selected;
   final VoidCallback onTap;
 
@@ -198,26 +262,32 @@ class _SeatBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.sketch;
     final Color fill;
+    final Color border;
     if (seat.taken) {
       fill = s.borderDefault;
+      border = s.borderDefault;
     } else if (selected) {
-      fill = s.brand;
+      fill = color;
+      border = s.ink;
     } else {
-      fill = s.brandSofter;
+      fill = color.withValues(alpha: 0.18);
+      border = color;
     }
     return GestureDetector(
       onTap: seat.taken ? null : onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
         width: 26,
         height: 26,
         margin: const EdgeInsets.symmetric(horizontal: 2.5),
         decoration: BoxDecoration(
           color: fill,
+          // Curved seat: rounded back, squared-off front edge.
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(8),
-            bottom: Radius.circular(4),
+            top: Radius.circular(13),
+            bottom: Radius.circular(5),
           ),
-          border: Border.all(color: seat.taken ? s.borderDefault : s.ink, width: 1.5),
+          border: Border.all(color: border, width: 1.5),
         ),
         child: selected
             ? const Icon(Icons.check, size: 14, color: Colors.white)
@@ -227,8 +297,10 @@ class _SeatBox extends StatelessWidget {
   }
 }
 
-class _Legend extends StatelessWidget {
-  const _Legend();
+class _CategoryLegend extends StatelessWidget {
+  const _CategoryLegend({required this.categories});
+
+  final List<SeatCategory> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -237,12 +309,25 @@ class _Legend extends StatelessWidget {
       fill: s.paperSoft,
       radius: AppRadius.lg,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _LegendItem(color: s.brandSofter, label: 'Available'),
-          _LegendItem(color: s.brand, label: 'Selected'),
-          _LegendItem(color: s.borderDefault, label: 'Taken'),
+          Wrap(
+            spacing: 18,
+            runSpacing: 10,
+            children: [
+              for (final c in categories)
+                _LegendItem(color: c.color, label: '${c.name}  \$${c.price.toStringAsFixed(0)}'),
+            ],
+          ),
+          const Divider(height: AppSpacing.lg),
+          Row(
+            children: [
+              _LegendItem(color: s.borderDefault, label: 'Taken'),
+              const SizedBox(width: 18),
+              _LegendItem(color: s.brand, label: 'Selected', filled: true),
+            ],
+          ),
         ],
       ),
     );
@@ -250,10 +335,11 @@ class _Legend extends StatelessWidget {
 }
 
 class _LegendItem extends StatelessWidget {
-  const _LegendItem({required this.color, required this.label});
+  const _LegendItem({required this.color, required this.label, this.filled = false});
 
   final Color color;
   final String label;
+  final bool filled;
 
   @override
   Widget build(BuildContext context) {
@@ -264,12 +350,12 @@ class _LegendItem extends StatelessWidget {
           width: 18,
           height: 18,
           decoration: BoxDecoration(
-            color: color,
+            color: filled ? color : color.withValues(alpha: 0.18),
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(6),
-              bottom: Radius.circular(3),
+              top: Radius.circular(9),
+              bottom: Radius.circular(4),
             ),
-            border: Border.all(color: context.sketch.ink, width: 1.5),
+            border: Border.all(color: color, width: 1.5),
           ),
         ),
         const SizedBox(width: 6),

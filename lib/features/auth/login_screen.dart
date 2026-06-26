@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/evora_logo.dart';
@@ -8,8 +10,27 @@ import 'package:evora/widgets/sketch_box.dart';
 import 'package:evora/widgets/sketch_button.dart';
 import 'package:evora/features/auth/widgets/password_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _email = TextEditingController();
+
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  void _signIn() {
+    // Whatever email you type becomes the account for this session.
+    context.read<SessionStore>().signIn(email: _email.text);
+    context.go('/attendee/browse');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +57,11 @@ class LoginScreen extends StatelessWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(color: s.bodySubtle),
               ),
               const SizedBox(height: AppSpacing.xl),
-              const TextField(
+              TextField(
+                controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                onSubmitted: (_) => _signIn(),
+                decoration: const InputDecoration(
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.mail_outline),
                 ),
@@ -57,7 +80,7 @@ class LoginScreen extends StatelessWidget {
               SketchButton(
                 label: 'Sign in',
                 icon: Icons.login,
-                onPressed: () => context.go('/attendee/browse'),
+                onPressed: _signIn,
               ),
               const SizedBox(height: AppSpacing.md),
               Row(

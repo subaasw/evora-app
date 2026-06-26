@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/sketch_box.dart';
@@ -9,13 +11,11 @@ import 'package:evora/widgets/sketch_button.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static const _name = 'Alex Tan';
-  static const _email = 'alex.tan@email.com';
-
   @override
   Widget build(BuildContext context) {
     final s = context.sketch;
     final theme = Theme.of(context);
+    final session = context.watch<SessionStore>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -37,7 +37,7 @@ class ProfileScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: s.ink, width: 2),
                     ),
-                    child: Text('AT',
+                    child: Text(session.initials,
                         style: theme.textTheme.headlineSmall?.copyWith(color: s.brandStrong)),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -45,8 +45,8 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_name, style: theme.textTheme.titleLarge),
-                        Text(_email,
+                        Text(session.name, style: theme.textTheme.titleLarge),
+                        Text(session.email,
                             style: theme.textTheme.bodyMedium?.copyWith(color: s.bodySubtle)),
                       ],
                     ),
@@ -92,7 +92,10 @@ class ProfileScreen extends StatelessWidget {
             label: 'Sign out',
             icon: Icons.logout,
             secondary: true,
-            onPressed: () => context.go('/login'),
+            onPressed: () {
+              context.read<SessionStore>().signOut();
+              context.go('/login');
+            },
           ),
         ],
       ),

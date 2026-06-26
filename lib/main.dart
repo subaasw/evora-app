@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:evora/data/mock/booking_store.dart';
 import 'package:evora/data/mock/event_store.dart';
 import 'package:evora/data/mock/organizer_store.dart';
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/data/mock/waitlist_store.dart';
 import 'package:evora/router.dart';
 import 'package:evora/theme/app_theme.dart';
@@ -21,6 +22,7 @@ class EvoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OrganizerStore()),
         ChangeNotifierProvider(create: (_) => BookingStore()),
         ChangeNotifierProvider(create: (_) => WaitlistStore()),
+        ChangeNotifierProvider(create: (_) => SessionStore()),
       ],
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: themeModeNotifier,

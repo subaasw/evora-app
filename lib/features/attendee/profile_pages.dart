@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_theme.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/theme/sketch_colors.dart';
 import 'package:evora/widgets/evora_logo.dart';
 import 'package:evora/widgets/sketch_box.dart';
 import 'package:evora/widgets/sketch_button.dart';
-
-// Mock signed-in attendee, mirrors ProfileScreen.
-const _kName = 'Alex Tan';
-const _kEmail = 'alex.tan@email.com';
-const _kPhone = '+1 555 0142';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,9 +17,10 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _name = TextEditingController(text: _kName);
-  final _email = TextEditingController(text: _kEmail);
-  final _phone = TextEditingController(text: _kPhone);
+  late final SessionStore _session = context.read<SessionStore>();
+  late final _name = TextEditingController(text: _session.name);
+  late final _email = TextEditingController(text: _session.email);
+  late final _phone = TextEditingController(text: _session.phone);
 
   @override
   void dispose() {
@@ -52,7 +50,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 shape: BoxShape.circle,
                 border: Border.all(color: s.ink, width: 2),
               ),
-              child: Text('AT',
+              child: Text(_session.initials,
                   style: theme.textTheme.displaySmall?.copyWith(color: s.brandStrong)),
             ),
           ),
@@ -71,6 +69,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             label: 'Save changes',
             icon: Icons.check,
             onPressed: () {
+              _session.update(
+                name: _name.text,
+                email: _email.text,
+                phone: _phone.text,
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Profile saved')),
               );

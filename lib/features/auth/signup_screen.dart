@@ -1,12 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import 'package:evora/data/mock/session_store.dart';
 import 'package:evora/theme/app_tokens.dart';
 import 'package:evora/widgets/sketch_button.dart';
 import 'package:evora/features/auth/widgets/password_field.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _name = TextEditingController();
+  final _email = TextEditingController();
+  final _phone = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _email.dispose();
+    _phone.dispose();
+    super.dispose();
+  }
+
+  void _createAccount() {
+    // Create the account in-session and drop straight into the app.
+    context.read<SessionStore>().signIn(
+          name: _name.text,
+          email: _email.text,
+          phone: _phone.text,
+        );
+    context.go('/attendee/browse');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +60,28 @@ class SignUpScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                controller: _name,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
                   labelText: 'Full name',
                   prefixIcon: Icon(Icons.person_outline),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              const TextField(
+              TextField(
+                controller: _email,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.mail_outline),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              const TextField(
+              TextField(
+                controller: _phone,
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Phone number',
                   prefixIcon: Icon(Icons.phone_outlined),
                 ),
@@ -61,7 +94,7 @@ class SignUpScreen extends StatelessWidget {
               SketchButton(
                 label: 'Create account',
                 icon: Icons.check,
-                onPressed: () => context.go('/login'),
+                onPressed: _createAccount,
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
